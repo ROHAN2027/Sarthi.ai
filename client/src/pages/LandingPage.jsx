@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInterview } from '../context/InterviewContext';
+import { useAuth } from '../context/AuthContext';
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const { setUserInfo, setCurrentStage, resetInterview } = useInterview();
+  const { user, logout } = useAuth();
   
   // Theme state with localStorage persistence
   const [theme, setTheme] = useState('dark');
@@ -24,6 +26,13 @@ const LandingPage = () => {
     setTheme(savedTheme);
     console.log('[LandingPage] Mounted - ready for new interview');
   }, []);
+
+  // Auto-fill user name if available from auth
+  useEffect(() => {
+    if (user && user.name && !formData.name) {
+      setFormData(prev => ({ ...prev, name: user.name }));
+    }
+  }, [user]);
 
   // Persist theme changes to localStorage
   useEffect(() => {
@@ -144,11 +153,24 @@ const LandingPage = () => {
           </div>
         </div>
         
-        <button
-          onClick={toggleTheme}
-          aria-label="Toggle theme"
-          className={`p-3 rounded-full transition-all duration-300 ${theme === 'dark' ? 'hover:bg-gray-800 hover:shadow-lg' : 'hover:bg-gray-200 hover:shadow-md'}`}
-        >
+        <div className="flex items-center gap-4">
+          {user && (
+            <div className="flex items-center gap-3 mr-4">
+              <img src={user.avatar} alt="User Avatar" className="w-8 h-8 rounded-full shadow-sm" />
+              <span className={`text-sm font-medium hidden md:block ${theme === 'dark' ? 'text-gray-200' : 'text-gray-700'}`}>{user.name}</span>
+              <button 
+                onClick={logout}
+                className={`text-xs px-3 py-1.5 rounded-md border transition-colors ${theme === 'dark' ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-300 text-gray-600 hover:bg-gray-100'}`}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+          <button
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className={`p-3 rounded-full transition-all duration-300 ${theme === 'dark' ? 'hover:bg-gray-800 hover:shadow-lg' : 'hover:bg-gray-200 hover:shadow-md'}`}
+          >
           {theme === 'dark' ? (
             // Sun icon for light mode
             <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +183,8 @@ const LandingPage = () => {
             </svg>
           )}
         </button>
-      </header>
+      </div>
+    </header>
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center px-6 py-12">

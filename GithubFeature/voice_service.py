@@ -15,9 +15,9 @@ from groq import Groq
 router = APIRouter(prefix="/voice", tags=["voice"])
 
 # Groq TTS voice options
-DEFAULT_TTS_VOICE = os.getenv("GROQ_TTS_VOICE", "Aaliyah-PlayAI")
-DEFAULT_TTS_MODEL = os.getenv("GROQ_TTS_MODEL", "playai-tts")
-DEFAULT_TTS_FORMAT = os.getenv("GROQ_TTS_FORMAT", "mp3")
+DEFAULT_TTS_VOICE = os.getenv("GROQ_TTS_VOICE", "troy")
+DEFAULT_TTS_MODEL = os.getenv("GROQ_TTS_MODEL", "canopylabs/orpheus-v1-english")
+DEFAULT_TTS_FORMAT = os.getenv("GROQ_TTS_FORMAT", "wav")
 
 
 class SpeechRequest(BaseModel):
@@ -28,7 +28,7 @@ class SpeechRequest(BaseModel):
         None, description="Voice to use (e.g., Aaliyah-PlayAI, etc.)"
     )
     model: str | None = Field(
-        None, description="TTS model to use (default: playai-tts)"
+        None, description="TTS model to use (default: canopylabs/orpheus-v1-english)"
     )
     response_format: str | None = Field(
         None,
@@ -103,7 +103,9 @@ def build_audio_stream(request: SpeechRequest) -> Iterator[bytes]:
 async def text_to_speech(request: SpeechRequest) -> StreamingResponse:
     """Stream Groq TTS audio generated from the provided text."""
     audio_stream = build_audio_stream(request)
-    return StreamingResponse(audio_stream, media_type="audio/mpeg")
+    audio_format = request.response_format or DEFAULT_TTS_FORMAT
+    media_type = f"audio/{audio_format}" if audio_format != "mp3" else "audio/mpeg"
+    return StreamingResponse(audio_stream, media_type=media_type)
 
 
 @router.post("/stt")

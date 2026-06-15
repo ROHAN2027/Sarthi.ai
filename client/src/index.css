@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────────
+ * Google Fonts import (Inter — clean, modern, highly readable)
+ * ───────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -34,7 +39,9 @@ body {
   box-sizing: border-box;
 }
 
-/* Animation for chat messages */
+/* ─────────────────────────────────────────────────────────────
+ * Animation for chat messages (preserved from original)
+ * ───────────────────────────────────────────────────────────── */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -48,4 +55,203 @@ body {
 
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-out;
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Auth Page — Animated gradient background
+ * ───────────────────────────────────────────────────────────── */
+.auth-gradient-bg {
+  background: linear-gradient(
+    -45deg,
+    #FFE4E8,   /* pastel pink */
+    #E8E0FF,   /* pastel lavender */
+    #DBEAFE,   /* pastel sky */
+    #D1FAE5,   /* pastel mint */
+    #FEF3C7,   /* pastel peach */
+    #E8E0FF    /* back to lavender */
+  );
+  background-size: 400% 400%;
+  animation: authGradientShift 12s ease infinite;
+}
+
+.auth-gradient-bg-dark {
+  background: linear-gradient(
+    -45deg,
+    #1a0a1e,   /* deep purple-black */
+    #0f172a,   /* deep navy */
+    #1e1b4b,   /* deep indigo */
+    #0c1a25,   /* deep teal-black */
+    #1a0a1e    /* back to purple-black */
+  );
+  background-size: 400% 400%;
+  animation: authGradientShift 12s ease infinite;
+}
+
+@keyframes authGradientShift {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 50% 100%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 50% 0%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Glassmorphism Card
+ * ───────────────────────────────────────────────────────────── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 8px 32px 0 rgba(31, 38, 135, 0.12),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
+}
+
+.glass-card-dark {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  box-shadow:
+    0 8px 32px 0 rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Floating decorative orbs (used on auth pages)
+ * ───────────────────────────────────────────────────────────── */
+.auth-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.auth-orb-1 {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(135deg, #C7B8FF, #FFB8C6);
+  top: -5%;
+  right: -5%;
+  animation: float 8s ease-in-out infinite;
+}
+
+.auth-orb-2 {
+  width: 250px;
+  height: 250px;
+  background: linear-gradient(135deg, #A7F3D0, #BFDBFE);
+  bottom: -5%;
+  left: -5%;
+  animation: float 8s ease-in-out 4s infinite;
+}
+
+.auth-orb-3 {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(135deg, #FDE68A, #FECDD3);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: float 10s ease-in-out 2s infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-15px) rotate(1deg); }
+  66% { transform: translateY(10px) rotate(-1deg); }
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Auth Input Styles
+ * ───────────────────────────────────────────────────────────── */
+.auth-input {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-input:focus {
+  box-shadow:
+    0 0 0 3px rgba(139, 92, 246, 0.15),
+    0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.auth-input.error {
+  box-shadow:
+    0 0 0 3px rgba(239, 68, 68, 0.15),
+    0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Auth Button Hover Shine Effect
+ * ───────────────────────────────────────────────────────────── */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shine::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.btn-shine:hover::after {
+  left: 100%;
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Password Strength Meter
+ * ───────────────────────────────────────────────────────────── */
+.strength-meter {
+  height: 4px;
+  border-radius: 2px;
+  transition: all 0.4s ease;
+}
+
+.strength-weak { width: 33%; background: linear-gradient(90deg, #ef4444, #f87171); }
+.strength-medium { width: 66%; background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.strength-strong { width: 100%; background: linear-gradient(90deg, #10b981, #34d399); }
+
+/* ─────────────────────────────────────────────────────────────
+ * Custom Scrollbar (for auth pages)
+ * ───────────────────────────────────────────────────────────── */
+.auth-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.auth-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.auth-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 3px;
+}
+.auth-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Google Sign-In Button Custom Styles
+ * ───────────────────────────────────────────────────────────── */
+.google-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.google-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.google-btn:active {
+  transform: translateY(0);
 }

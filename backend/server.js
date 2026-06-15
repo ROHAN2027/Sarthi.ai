@@ -7,6 +7,7 @@ import problemRoutes from './routes/problem_route.js';
 import conceptualRoutes from './routes/conceptual_route.js';
 import interviewSessionRoutes from './routes/interview_session_route.js';
 import { setupVoiceWebSocket } from './websocket/voiceHandler.js';
+import authRoutes from './routes/auth_route.js';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ connectDB();
 app.use('/api/problems', problemRoutes);
 app.use('/api/conceptual', conceptualRoutes);
 app.use('/api/interview', interviewSessionRoutes);
+app.use('/api/auth', authRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
