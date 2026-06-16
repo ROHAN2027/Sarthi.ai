@@ -21,7 +21,9 @@
     "google-auth-library": "^10.7.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.19.3",
+    "nodemailer": "^9.0.0",
     "nodemon": "^3.1.10",
+    "pdfkit": "^0.19.1",
     "ws": "^8.18.3"
   },
   "description": ""

@@ -8,6 +8,40 @@ const InterviewResults = () => {
   const { name, email, completedStages, resetInterview } = useInterview();
   const [sessionData, setSessionData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [emailError, setEmailError] = useState(null);
+
+  const handleEmailReport = async () => {
+    if (!email) {
+      setEmailError("User email not found. Please check your profile.");
+      return;
+    }
+    setSendingEmail(true);
+    setEmailError(null);
+    try {
+      // The state might be nested depending on which page navigated here
+      const actualSession = sessionData?.sessionData || sessionData;
+      const sId = actualSession?.sessionId || actualSession?._id;
+
+      // Use full URL or proxy based on standard setup
+      const res = await fetch(`http://localhost:5000/api/interview/${sId}/send-report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setEmailSent(true);
+      } else {
+        setEmailError(data.error || "Failed to send report");
+      }
+    } catch (err) {
+      setEmailError(err.message || "Network error while sending report");
+    } finally {
+      setSendingEmail(false);
+    }
+  };
 
   useEffect(() => {
     // Get data from navigation state or fetch from API
@@ -36,8 +70,13 @@ const InterviewResults = () => {
     );
   }
 
-  const { sessionType, totalScore, maxScore, questionsAnswered } = sessionData || {};
-  const percentage = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
+  const actualSession = sessionData?.sessionData || sessionData || {};
+  const { sessionType, totalScore, maxScore, questionsAnswered, finalScore, finalMaxScore } = actualSession;
+  
+  // Handle both pre-completion stats and final completed stats
+  const displayScore = finalScore !== undefined ? finalScore : totalScore;
+  const displayMaxScore = finalMaxScore !== undefined ? finalMaxScore : maxScore;
+  const percentage = displayMaxScore > 0 ? Math.round((displayScore / displayMaxScore) * 100) : 0;
 
   const getGradeColor = (percent) => {
     if (percent >= 80) return 'text-green-500';
@@ -103,7 +142,7 @@ const InterviewResults = () => {
               {percentage}%
             </div>
             <div className="text-2xl text-gray-300 mb-1">
-              {totalScore} / {maxScore} Points
+              {displayScore || 0} / {displayMaxScore || 0} Points
             </div>
             <div className={`text-xl font-semibold ${getGradeColor(percentage)}`}>
               {getGradeText(percentage)}
@@ -131,7 +170,7 @@ const InterviewResults = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="bg-gray-800 rounded-lg p-4 text-center">
             <div className="text-3xl mb-2">📊</div>
-            <div className="text-2xl font-bold">{totalScore}</div>
+            <div className="text-2xl font-bold">{displayScore || 0}</div>
             <div className="text-sm text-gray-400">Total Score</div>
           </div>
           <div className="bg-gray-800 rounded-lg p-4 text-center">
@@ -196,17 +235,43 @@ const InterviewResults = () => {
           >
             Try Again
           </button>
-          <button
-            onClick={() => alert('PDF download coming soon!')}
-            className="px-8 py-3 bg-green-600 hover:bg-green-700 rounded-lg font-semibold transition-colors"
-          >
-            Download Report
-          </button>
+          {!emailSent ? (
+            <button
+              onClick={handleEmailReport}
+              disabled={sendingEmail}
+              className={`px-8 py-3 rounded-lg font-semibold transition-all shadow-md ${
+                sendingEmail 
+                  ? 'bg-gray-600 cursor-not-allowed' 
+                  : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
+              }`}
+            >
+              {sendingEmail ? 'Sending Report...' : 'Email Me My Detailed Report'}
+            </button>
+          ) : (
+            <button
+              disabled
+              className="px-8 py-3 bg-green-800 text-green-200 rounded-lg font-semibold cursor-not-allowed border border-green-500"
+            >
+              ✓ Report Sent
+            </button>
+          )}
         </div>
+
+        {emailError && (
+          <div className="mt-4 p-3 bg-red-900/30 border border-red-500 text-red-300 rounded text-center">
+            {emailError}
+          </div>
+        )}
+        
+        {emailSent && (
+          <div className="mt-4 p-4 bg-gradient-to-r from-emerald-900/50 to-teal-900/50 border border-emerald-500/30 text-emerald-300 rounded-lg text-center backdrop-blur-sm animate-pulse">
+            ✅ Your report has been successfully mailed to you. You can now safely close this tab.
+          </div>
+        )}
 
         {/* Footer Note */}
         <div className="mt-8 text-center text-gray-500 text-sm">
-          <p>Detailed feedback will be available soon. Check your email for the complete report.</p>
+          <p>Detailed feedback is also saved in your account dashboard.</p>
         </div>
       </div>
     </div>

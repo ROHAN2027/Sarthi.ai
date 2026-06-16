@@ -1,6 +1,8 @@
 import InterviewSession from '../models/interviewSession.model.js';
 import ConceptualQuestion from '../models/conceptualQuestion.model.js';
 import { evaluateConceptualAnswer } from '../services/geminiEvaluator.js';
+import { generateInterviewReportPDF } from '../services/pdfService.js';
+import { sendReportEmail } from '../services/emailService.js';
 
 /**
  * Start a new interview session
@@ -351,6 +353,46 @@ export const getInterviewHistory = async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to fetch interview history'
+    });
+  }
+};
+
+/**
+ * Generate PDF report and send via email
+ * POST /api/interview/:sessionId/send-report
+ */
+export const sendSessionReport = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, error: 'Email address is required' });
+    }
+
+    const session = await InterviewSession.findById(sessionId)
+      .populate('dsaQuestions.problemId')
+      .populate('conceptualQuestions.questionId');
+
+    if (!session) {
+      return res.status(404).json({ success: false, error: 'Session not found' });
+    }
+
+    // Pass a dummy user object with name derived from email if not provided
+    const userMock = { name: email.split('@')[0] };
+    const pdfBuffer = await generateInterviewReportPDF(session, userMock);
+    const emailResult = await sendReportEmail(email, pdfBuffer, session);
+
+    res.json({
+      success: true,
+      message: 'Report sent successfully',
+      mocked: emailResult.mocked
+    });
+  } catch (error) {
+    console.error('Error generating or sending report:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to send report'
     });
   }
 };

@@ -20,6 +20,11 @@ const LandingPage = () => {
   const [error, setError] = useState(null);
   const [parsedData, setParsedData] = useState(null);
 
+  // History state
+  const [pastSessions, setPastSessions] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [emailSendingMap, setEmailSendingMap] = useState({});
+
   // Load theme from localStorage on mount
   useEffect(() => {
     const savedTheme = localStorage.getItem('sarthi-theme') || 'dark';
@@ -33,6 +38,44 @@ const LandingPage = () => {
       setFormData(prev => ({ ...prev, name: user.name }));
     }
   }, [user]);
+
+  // Fetch interview history when user logs in
+  useEffect(() => {
+    if (user && user._id) {
+      setLoadingHistory(true);
+      fetch(`http://localhost:5000/api/interview/history/${user._id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) setPastSessions(data.sessions);
+        })
+        .catch(err => console.error('Failed to fetch history:', err))
+        .finally(() => setLoadingHistory(false));
+    }
+  }, [user]);
+
+  const handleResendReport = async (sessionId) => {
+    if (!user?.email) return;
+    setEmailSendingMap(prev => ({ ...prev, [sessionId]: 'sending' }));
+    try {
+      const res = await fetch(`http://localhost:5000/api/interview/${sessionId}/send-report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email })
+      });
+      const data = await res.json();
+      setEmailSendingMap(prev => ({ 
+        ...prev, 
+        [sessionId]: data.success ? 'sent' : 'error' 
+      }));
+      if (data.success) {
+        setTimeout(() => {
+          setEmailSendingMap(prev => ({ ...prev, [sessionId]: null }));
+        }, 5000);
+      }
+    } catch (err) {
+      setEmailSendingMap(prev => ({ ...prev, [sessionId]: 'error' }));
+    }
+  };
 
   // Persist theme changes to localStorage
   useEffect(() => {
@@ -187,7 +230,7 @@ const LandingPage = () => {
     </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-6 py-12">
+      <main className="flex-1 flex flex-col items-center py-12 px-6 space-y-12 w-full max-w-6xl mx-auto">
         <div className={`w-full max-w-lg rounded-2xl shadow-2xl p-8 space-y-6 transition-all duration-300 backdrop-blur-lg ${
           theme === 'dark' 
             ? 'bg-gray-900/80 border border-gray-800' 
@@ -334,6 +377,65 @@ const LandingPage = () => {
             </p>
           </div>
         </div>
+
+        {/* Past Interview History Panel */}
+        {user && (
+          <div className="w-full max-w-4xl space-y-6">
+            <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'}`}>Past Interview Reports</h3>
+            {loadingHistory ? (
+              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}>Loading history...</p>
+            ) : pastSessions.length === 0 ? (
+              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}>No completed interviews found. Start your journey above!</p>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2">
+                {pastSessions.map(session => {
+                  const percentage = session.percentage || (session.finalMaxScore > 0 ? Math.round((session.finalScore/session.finalMaxScore)*100) : 0);
+                  const sendingState = emailSendingMap[session._id];
+                  
+                  return (
+                    <div key={session._id} className={`p-6 rounded-xl border transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 ${
+                      theme === 'dark' ? 'bg-gray-900/40 border-gray-800 hover:border-indigo-500/50 backdrop-blur-md' : 'bg-white border-gray-200 hover:border-indigo-300'
+                    }`}>
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                            theme === 'dark' ? 'bg-indigo-900/50 text-indigo-300 border border-indigo-800/50' : 'bg-indigo-100 text-indigo-700'
+                          }`}>
+                            {session.sessionType.toUpperCase()}
+                          </span>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                            {new Date(session.completedAt || session.startedAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <div className={`text-2xl font-bold ${
+                            percentage >= 80 ? 'text-emerald-500' : percentage >= 60 ? 'text-yellow-500' : 'text-orange-500'
+                          }`}>{percentage}%</div>
+                          <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+                            {session.finalScore || 0} / {session.finalMaxScore || 0} pts
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <button
+                        onClick={() => handleResendReport(session._id)}
+                        disabled={sendingState === 'sending' || sendingState === 'sent'}
+                        className={`w-full py-2.5 rounded-lg text-sm font-semibold transition-all flex justify-center items-center ${
+                          sendingState === 'sent' ? 'bg-emerald-600/20 text-emerald-500 border border-emerald-500/30 cursor-not-allowed' :
+                          sendingState === 'sending' ? 'bg-gray-600 text-gray-300 cursor-not-allowed' :
+                          theme === 'dark' ? 'bg-gray-800 hover:bg-gray-700 text-white border border-gray-700' : 'bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-300'
+                        }`}
+                      >
+                        {sendingState === 'sent' ? '✅ Email Sent' :
+                         sendingState === 'sending' ? 'Sending...' : 'Email Me Report'}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </main>
 
       {/* Footer */}

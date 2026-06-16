@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const VoiceInterview = ({ 
   interviewType = 'conceptual', 
@@ -7,6 +8,7 @@ const VoiceInterview = ({
   githubRepo = null,
   candidateName = null 
 }) => {
+  const { user } = useAuth();
   // Connection state
   const [isConnected, setIsConnected] = useState(false);
   const [sessionId, setSessionId] = useState(null);
@@ -276,7 +278,8 @@ const VoiceInterview = ({
 
     wsRef.current.send(JSON.stringify({
       type: 'start_interview',
-      interviewType: interviewType
+      interviewType: interviewType,
+      userId: user?._id || 'anonymous'
     }));
 
     setInterviewStarted(true);
@@ -300,7 +303,7 @@ const VoiceInterview = ({
     wsRef.current.send(JSON.stringify({
       type: 'start_project_interview',
       repoUrl: repoUrl,
-      userId: 'anonymous'
+      userId: user?._id || 'anonymous'
     }));
 
     setInterviewStarted(true);

@@ -430,6 +430,9 @@ async function processAnswer(ws, wsSessionId, answerText, isSkipped) {
     sessionQuestion.aiEvaluation = evaluation;
     sessionQuestion.timestamp = new Date();
 
+    // Tell Mongoose explicitly that we modified this array element
+    dbSession.markModified(sessionType === 'project' ? 'projectQuestions' : 'conceptualQuestions');
+
     // Update scores based on session type
     if (sessionType === 'project') {
       dbSession.updateProjectScore();

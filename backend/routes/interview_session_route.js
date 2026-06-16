@@ -5,7 +5,8 @@ import {
   submitDSACode,
   completeInterview,
   getInterviewSession,
-  getInterviewHistory
+  getInterviewHistory,
+  sendSessionReport
 } from '../controllers/interviewSessionController.js';
 
 const router = express.Router();
@@ -21,6 +22,9 @@ router.post('/:sessionId/submit-dsa', submitDSACode);
 
 // Complete interview
 router.post('/:sessionId/complete', completeInterview);
+
+// Send PDF report via email
+router.post('/:sessionId/send-report', sendSessionReport);
 
 // Get session details
 router.get('/:sessionId', getInterviewSession);
