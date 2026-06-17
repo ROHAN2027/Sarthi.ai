@@ -21,7 +21,9 @@
  * ──────────────────────────────────────────────────────────────────────────
  */
 
-const AUTH_API_URL = 'http://localhost:5000/api/auth';
+import { API_BASE_URL as BASE_URL } from '../config';
+
+const AUTH_API_URL = `${BASE_URL}/api/auth`;
 
 /**
  * Parse error response from the server.

@@ -1,5 +1,7 @@
+import { API_BASE_URL as BASE_URL } from '../config';
+
 // API Base URL
-export const API_BASE_URL = 'http://localhost:5000/api/problems';
+export const API_BASE_URL = `${BASE_URL}/api/problems`;
 
 /**
  * Fetch random questions from backend

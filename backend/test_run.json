@@ -1,4 +1,0 @@
-{
-  "code": "def twoSum(nums, target):\n    result = []\n    for i in range(len(nums)):\n        for j in range(i+1, len(nums)):\n            if nums[i] + nums[j] == target:\n                result.append(i)\n                result.append(j)\n                return result\n    return result",
-  "language": "python"
-}

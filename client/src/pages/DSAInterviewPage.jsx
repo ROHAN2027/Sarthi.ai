@@ -47,7 +47,7 @@ function DSAInterviewPage() {
   // Preload GitHub questions in background ONCE (if link available)
   useEffect(() => {
     if (githubLink && !interviewComplete && !hasPreloaded.current) {
-      console.log('[DSAInterviewPage] Triggering preload for:', githubLink);
+      // Debug log removed
       hasPreloaded.current = true;
       // Start preloading after a short delay (let DSA load first)
       const timer = setTimeout(() => {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useInterview } from '../context/InterviewContext';
+import { API_BASE_URL } from '../config';
 
 const InterviewResults = () => {
   const location = useLocation();
@@ -25,7 +26,7 @@ const InterviewResults = () => {
       const sId = actualSession?.sessionId || actualSession?._id;
 
       // Use full URL or proxy based on standard setup
-      const res = await fetch(`http://localhost:5000/api/interview/${sId}/send-report`, {
+      const res = await fetch(`${API_BASE_URL}/api/interview/${sId}/send-report`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
@@ -93,185 +94,213 @@ const InterviewResults = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-6">
+    <div className="min-h-screen bg-[#0a0a0a] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-[#0a0a0a] to-[#0a0a0a] text-white p-6 font-sans">
       {/* Personalized Header */}
-      <div className="max-w-5xl mx-auto mb-8">
-        <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold mb-2">
-            🎉 Congratulations, {name || 'Candidate'}!
+      <div className="max-w-5xl mx-auto mb-10 pt-8">
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-bold mb-3 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+            Assessment Results
           </h1>
-          <p className="text-gray-400 text-lg">
-            You've completed all interview rounds
+          <p className="text-blue-400 font-medium tracking-wide">
+            {name ? `Candidate: ${name}` : 'Detailed Evaluation Report'}
           </p>
         </div>
         
         {/* Completed Stages Summary */}
-        <div className="bg-gray-800 rounded-xl p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4 text-center">Completed Rounds</h2>
-          <div className="flex justify-center items-center space-x-8">
+        <div className="bg-[#111111]/80 backdrop-blur-xl border border-white/5 rounded-2xl p-8 mb-8 shadow-2xl">
+          <h2 className="text-lg font-semibold mb-6 text-center text-gray-300 tracking-wide uppercase text-sm">Evaluation Modules</h2>
+          <div className="flex justify-center items-center space-x-12">
             {['dsa', 'conceptual', 'project'].map(stage => (
-              <div key={stage} className="text-center">
+              <div key={stage} className="text-center group">
                 <div className={`
-                  w-16 h-16 rounded-full flex items-center justify-center text-2xl mb-2
-                  ${completedStages.includes(stage) ? 'bg-green-600' : 'bg-gray-600'}
+                  w-14 h-14 rounded-full flex items-center justify-center mb-3 mx-auto transition-all duration-300
+                  ${completedStages.includes(stage) 
+                    ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)]' 
+                    : 'bg-white/5 border border-white/5 text-gray-600'}
                 `}>
-                  {completedStages.includes(stage) ? '✓' : '○'}
+                  {completedStages.includes(stage) ? (
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : (
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  )}
                 </div>
-                <p className={`text-sm ${completedStages.includes(stage) ? 'text-green-400' : 'text-gray-500'}`}>
-                  {stage === 'dsa' ? 'DSA' : stage === 'conceptual' ? 'Conceptual' : 'Project'}
+                <p className={`text-sm font-medium tracking-wide ${completedStages.includes(stage) ? 'text-emerald-400' : 'text-gray-500'}`}>
+                  {stage === 'dsa' ? 'Data Structures' : stage === 'conceptual' ? 'System Design' : 'Project Architecture'}
                 </p>
               </div>
             ))}
           </div>
         </div>
       </div>
+
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2">Interview Complete! 🎉</h1>
-          <p className="text-gray-400">
-            {sessionType === 'conceptual' ? 'Conceptual Interview' : 
-             sessionType === 'dsa' ? 'DSA Coding Interview' : 'Full Interview'} Results
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-semibold mb-3 text-white tracking-tight">Performance Analytics</h2>
+          <p className="text-gray-400 font-medium">
+            {sessionType === 'conceptual' ? 'Conceptual Assessment' : 
+             sessionType === 'dsa' ? 'Algorithmic Assessment' : 'Comprehensive Assessment'} Summary
           </p>
         </div>
 
         {/* Score Card */}
-        <div className="bg-gray-800 rounded-xl p-8 mb-6 text-center">
-          <div className="mb-6">
-            <div className={`text-7xl font-bold ${getGradeColor(percentage)} mb-2`}>
+        <div className="bg-gradient-to-b from-[#111111]/90 to-[#0a0a0a] backdrop-blur-xl border border-white/5 rounded-3xl p-10 mb-8 text-center relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
+          <div className="mb-8">
+            <div className={`text-8xl font-bold tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-br ${
+                percentage >= 80 ? 'from-emerald-400 to-teal-600' :
+                percentage >= 60 ? 'from-blue-400 to-indigo-600' :
+                percentage >= 40 ? 'from-yellow-400 to-orange-600' : 'from-red-400 to-rose-600'
+              }`}>
               {percentage}%
             </div>
-            <div className="text-2xl text-gray-300 mb-1">
-              {displayScore || 0} / {displayMaxScore || 0} Points
+            <div className="text-lg text-gray-400 font-medium mb-2 uppercase tracking-widest">
+              {displayScore || 0} / {displayMaxScore || 0} Total Points
             </div>
-            <div className={`text-xl font-semibold ${getGradeColor(percentage)}`}>
+            <div className={`text-xl font-semibold mt-4 ${
+                percentage >= 80 ? 'text-emerald-400' :
+                percentage >= 60 ? 'text-blue-400' :
+                percentage >= 40 ? 'text-yellow-400' : 'text-red-400'
+              }`}>
               {getGradeText(percentage)}
             </div>
           </div>
 
           {/* Progress Bar */}
-          <div className="w-full bg-gray-700 rounded-full h-4 mb-4">
+          <div className="w-full bg-white/5 rounded-full h-3 mb-6 overflow-hidden border border-white/5">
             <div
-              className={`h-4 rounded-full transition-all duration-1000 ${
-                percentage >= 80 ? 'bg-green-500' :
-                percentage >= 60 ? 'bg-yellow-500' :
-                percentage >= 40 ? 'bg-orange-500' : 'bg-red-500'
+              className={`h-full rounded-full transition-all duration-1000 ease-out ${
+                percentage >= 80 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' :
+                percentage >= 60 ? 'bg-gradient-to-r from-blue-500 to-indigo-400' :
+                percentage >= 40 ? 'bg-gradient-to-r from-yellow-500 to-orange-400' : 'bg-gradient-to-r from-red-500 to-rose-400'
               }`}
               style={{ width: `${percentage}%` }}
             />
           </div>
 
-          <p className="text-gray-400">
-            Questions Answered: {questionsAnswered || 0}
+          <p className="text-gray-500 text-sm font-medium tracking-wide">
+            TOTAL QUESTIONS EVALUATED: {questionsAnswered || 0}
           </p>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-gray-800 rounded-lg p-4 text-center">
-            <div className="text-3xl mb-2">📊</div>
-            <div className="text-2xl font-bold">{displayScore || 0}</div>
-            <div className="text-sm text-gray-400">Total Score</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-[#111111]/80 backdrop-blur-xl border border-white/5 rounded-2xl p-6 flex flex-col items-center justify-center shadow-lg hover:bg-white/5 transition-colors">
+            <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center mb-4">
+              <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <div className="text-3xl font-bold text-white mb-1">{displayScore || 0}</div>
+            <div className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Raw Score</div>
           </div>
-          <div className="bg-gray-800 rounded-lg p-4 text-center">
-            <div className="text-3xl mb-2">❓</div>
-            <div className="text-2xl font-bold">{questionsAnswered || 0}</div>
-            <div className="text-sm text-gray-400">Questions</div>
+          <div className="bg-[#111111]/80 backdrop-blur-xl border border-white/5 rounded-2xl p-6 flex flex-col items-center justify-center shadow-lg hover:bg-white/5 transition-colors">
+            <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center mb-4">
+              <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div className="text-3xl font-bold text-white mb-1">{questionsAnswered || 0}</div>
+            <div className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Questions</div>
           </div>
-          <div className="bg-gray-800 rounded-lg p-4 text-center">
-            <div className="text-3xl mb-2">⭐</div>
-            <div className="text-2xl font-bold">{percentage}%</div>
-            <div className="text-sm text-gray-400">Accuracy</div>
+          <div className="bg-[#111111]/80 backdrop-blur-xl border border-white/5 rounded-2xl p-6 flex flex-col items-center justify-center shadow-lg hover:bg-white/5 transition-colors">
+            <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center mb-4">
+              <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="text-3xl font-bold text-white mb-1">{percentage}%</div>
+            <div className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Accuracy</div>
           </div>
         </div>
 
         {/* Feedback Section */}
-        <div className="bg-gray-800 rounded-xl p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-4 flex items-center">
-            <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div className="bg-[#111111]/80 backdrop-blur-xl border border-white/5 rounded-2xl p-8 mb-8 shadow-lg">
+          <h2 className="text-xl font-semibold mb-6 flex items-center text-white tracking-tight">
+            <svg className="w-5 h-5 mr-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Performance Summary
+            Executive Summary
           </h2>
-          <div className="space-y-3">
+          <div className="p-5 rounded-xl bg-white/5 border border-white/5 text-gray-300 leading-relaxed font-medium">
             {percentage >= 80 && (
-              <p className="text-gray-300">
-                🌟 Outstanding performance! You demonstrated strong understanding of the concepts.
-                Keep up the excellent work!
+              <p>
+                Outstanding technical proficiency demonstrated. The candidate showed exceptional understanding of the core architecture and systematic problem-solving capabilities. Highly recommended to proceed.
               </p>
             )}
             {percentage >= 60 && percentage < 80 && (
-              <p className="text-gray-300">
-                👍 Good job! You have a solid grasp of most concepts. Review the feedback to
-                strengthen your weaker areas.
+              <p>
+                Solid foundational knowledge displayed. The candidate possesses a competent grasp of the evaluated technologies. Further refinement in advanced concepts could elevate the overall assessment.
               </p>
             )}
             {percentage >= 40 && percentage < 60 && (
-              <p className="text-gray-300">
-                📚 Fair attempt. Focus on understanding core concepts more deeply. Practice
-                will help improve your performance.
+              <p>
+                Adequate technical understanding shown. The candidate met the basic requirements but may need additional support or training in core areas to handle more complex architectural challenges.
               </p>
             )}
             {percentage < 40 && (
-              <p className="text-gray-300">
-                💪 Don't be discouraged! Use this as a learning opportunity. Review the topics
-                and try again. Consistent practice leads to improvement!
+              <p>
+                The assessment indicates significant gaps in the required technical proficiency. The candidate struggled with key concepts and would benefit from further preparation before attempting similar technical evaluations.
               </p>
             )}
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
           <button
             onClick={() => navigate('/')}
-            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-colors"
+            className="px-8 py-3.5 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl font-medium tracking-wide transition-all duration-200"
           >
-            Back to Home
+            Return to Dashboard
           </button>
           <button
             onClick={() => window.location.reload()}
-            className="px-8 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition-colors"
+            className="px-8 py-3.5 bg-white text-black hover:bg-gray-100 rounded-xl font-semibold tracking-wide transition-all duration-200 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
           >
-            Try Again
+            Retake Assessment
           </button>
           {!emailSent ? (
             <button
               onClick={handleEmailReport}
               disabled={sendingEmail}
-              className={`px-8 py-3 rounded-lg font-semibold transition-all shadow-md ${
+              className={`px-8 py-3.5 rounded-xl font-semibold tracking-wide transition-all duration-200 shadow-lg border ${
                 sendingEmail 
-                  ? 'bg-gray-600 cursor-not-allowed' 
-                  : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
+                  ? 'bg-white/5 border-white/10 text-gray-500 cursor-not-allowed' 
+                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white border-blue-500/30 hover:border-blue-400/50'
               }`}
             >
-              {sendingEmail ? 'Sending Report...' : 'Email Me My Detailed Report'}
+              {sendingEmail ? 'Processing...' : 'Export Detailed Report'}
             </button>
           ) : (
             <button
               disabled
-              className="px-8 py-3 bg-green-800 text-green-200 rounded-lg font-semibold cursor-not-allowed border border-green-500"
+              className="px-8 py-3.5 bg-emerald-500/10 text-emerald-400 rounded-xl font-medium cursor-not-allowed border border-emerald-500/20"
             >
-              ✓ Report Sent
+              Report Dispatched Successfully
             </button>
           )}
         </div>
 
         {emailError && (
-          <div className="mt-4 p-3 bg-red-900/30 border border-red-500 text-red-300 rounded text-center">
+          <div className="mt-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-center text-sm font-medium">
             {emailError}
           </div>
         )}
         
         {emailSent && (
-          <div className="mt-4 p-4 bg-gradient-to-r from-emerald-900/50 to-teal-900/50 border border-emerald-500/30 text-emerald-300 rounded-lg text-center backdrop-blur-sm animate-pulse">
-            ✅ Your report has been successfully mailed to you. You can now safely close this tab.
+          <div className="mt-6 p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl text-center text-sm font-medium backdrop-blur-sm animate-pulse">
+            The detailed assessment report has been dispatched to the candidate's registered email address.
           </div>
         )}
 
         {/* Footer Note */}
-        <div className="mt-8 text-center text-gray-500 text-sm">
-          <p>Detailed feedback is also saved in your account dashboard.</p>
+        <div className="mt-12 text-center text-gray-600 text-xs font-medium tracking-widest uppercase mb-8">
+          <p>Sarthi.ai Technical Evaluation Platform</p>
         </div>
       </div>
     </div>

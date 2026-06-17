@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInterview } from '../context/InterviewContext';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL, PYTHON_API_URL } from '../config';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const LandingPage = () => {
   useEffect(() => {
     const savedTheme = localStorage.getItem('sarthi-theme') || 'dark';
     setTheme(savedTheme);
-    console.log('[LandingPage] Mounted - ready for new interview');
+    // Debug log removed
   }, []);
 
   // Auto-fill user name if available from auth
@@ -43,7 +44,7 @@ const LandingPage = () => {
   useEffect(() => {
     if (user && user._id) {
       setLoadingHistory(true);
-      fetch(`http://localhost:5000/api/interview/history/${user._id}`)
+      fetch(`${API_BASE_URL}/api/interview/history/${user._id}`)
         .then(res => res.json())
         .then(data => {
           if (data.success) setPastSessions(data.sessions);
@@ -57,7 +58,7 @@ const LandingPage = () => {
     if (!user?.email) return;
     setEmailSendingMap(prev => ({ ...prev, [sessionId]: 'sending' }));
     try {
-      const res = await fetch(`http://localhost:5000/api/interview/${sessionId}/send-report`, {
+      const res = await fetch(`${API_BASE_URL}/api/interview/${sessionId}/send-report`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: user.email })
@@ -119,7 +120,7 @@ const LandingPage = () => {
       const formDataToSend = new FormData();
       formDataToSend.append('file', formData.resumeFile);
 
-      const response = await fetch('http://localhost:8000/parse-resume', {
+      const response = await fetch(`${PYTHON_API_URL}/parse-resume`, {
         method: 'POST',
         body: formDataToSend
       });
@@ -129,7 +130,7 @@ const LandingPage = () => {
       }
 
       const data = await response.json();
-      console.log('[LandingPage] Parsed resume data:', data);
+      // Debug log removed
       setParsedData(data);
       
       // Auto-fill name if not provided
@@ -155,12 +156,6 @@ const LandingPage = () => {
       return;
     }
 
-    console.log('[LandingPage] Starting interview with data:', {
-      name: formData.name,
-      email: parsedData.email,
-      github_links: parsedData.github_links
-    });
-
     // Store user info in context (preserve original functionality)
     setUserInfo(
       formData.name,
@@ -176,12 +171,12 @@ const LandingPage = () => {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col transition-all duration-300 ${theme === 'dark' ? 'dark bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 text-gray-100' : 'bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900'}`}>
+    <div className="min-h-screen flex flex-col font-sans selection:bg-blue-500/30 bg-[#0a0a0a] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-[#0a0a0a] to-[#0a0a0a] text-white">
       {/* Header */}
-      <header className={`w-full px-6 py-4 flex justify-between items-center backdrop-blur-sm transition-all duration-300 ${theme === 'dark' ? 'bg-gray-900/50 border-b border-gray-800' : 'bg-white/50 border-b border-gray-200'}`}>
+      <header className="w-full px-6 py-4 flex justify-between items-center backdrop-blur-xl bg-[#111111]/80 border-b border-white/5 sticky top-0 z-50">
         <div className="flex items-center gap-3">
           {/* Logo */}
-          <div className="w-10 h-10 rounded-lg overflow-hidden shadow-md">
+          <div className="w-10 h-10 rounded-lg overflow-hidden shadow-md border border-white/10">
             <img 
               src="/src/data/WhatsApp Image 2025-11-07 at 17.43.30_7cdd5e13.jpg" 
               alt="Sarthi Logo" 
@@ -189,8 +184,8 @@ const LandingPage = () => {
             />
           </div>
           <div>
-            <h1 className="font-bold text-xl">Sarthi.ai</h1>
-            <p className={`text-xs transition-all duration-300 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+            <h1 className="font-bold text-xl tracking-tight text-white">Sarthi.ai</h1>
+            <p className="text-xs transition-all duration-300 text-gray-400 font-medium">
               AI-powered technical interview simulator
             </p>
           </div>
@@ -199,49 +194,28 @@ const LandingPage = () => {
         <div className="flex items-center gap-4">
           {user && (
             <div className="flex items-center gap-3 mr-4">
-              <img src={user.avatar} alt="User Avatar" className="w-8 h-8 rounded-full shadow-sm" />
-              <span className={`text-sm font-medium hidden md:block ${theme === 'dark' ? 'text-gray-200' : 'text-gray-700'}`}>{user.name}</span>
+              <img src={user.avatar} alt="User Avatar" className="w-8 h-8 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/10" />
+              <span className="text-sm font-medium hidden md:block text-gray-200">{user.name}</span>
               <button 
                 onClick={logout}
-                className={`text-xs px-3 py-1.5 rounded-md border transition-colors ${theme === 'dark' ? 'border-gray-700 text-gray-300 hover:bg-gray-800' : 'border-gray-300 text-gray-600 hover:bg-gray-100'}`}
+                className="text-xs px-3 py-1.5 rounded-md border transition-colors border-white/10 text-gray-300 hover:bg-white/5"
               >
                 Logout
               </button>
             </div>
           )}
-          <button
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            className={`p-3 rounded-full transition-all duration-300 ${theme === 'dark' ? 'hover:bg-gray-800 hover:shadow-lg' : 'hover:bg-gray-200 hover:shadow-md'}`}
-          >
-          {theme === 'dark' ? (
-            // Sun icon for light mode
-            <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-          ) : (
-            // Moon icon for dark mode
-            <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
-          )}
-        </button>
-      </div>
-    </header>
+        </div>
+      </header>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center py-12 px-6 space-y-12 w-full max-w-6xl mx-auto">
-        <div className={`w-full max-w-lg rounded-2xl shadow-2xl p-8 space-y-6 transition-all duration-300 backdrop-blur-lg ${
-          theme === 'dark' 
-            ? 'bg-gray-900/80 border border-gray-800' 
-            : 'bg-white/80 border border-gray-200'
-        }`}>
+        <div className="w-full max-w-lg rounded-2xl shadow-2xl p-8 space-y-6 backdrop-blur-xl bg-[#111111]/80 border border-white/5">
           
-          <h2 className="text-3xl font-bold text-center">Get Started</h2>
+          <h2 className="text-3xl font-bold text-center tracking-tight text-white">Get Started</h2>
           
           {/* Name Input */}
           <div className="space-y-2">
-            <label htmlFor="name-input" className="block text-sm font-medium">
+            <label htmlFor="name-input" className="block text-sm font-medium text-gray-300">
               Your Name *
             </label>
             <input
@@ -250,17 +224,13 @@ const LandingPage = () => {
               value={formData.name}
               onChange={handleNameChange}
               placeholder="Enter your full name"
-              className={`w-full px-4 py-3 rounded-md border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                theme === 'dark' 
-                  ? 'bg-gray-800 border-gray-700 text-gray-100' 
-                  : 'bg-white border-gray-300 text-gray-900'
-              }`}
+              className="w-full px-4 py-3 rounded-lg border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-white/5 border-white/10 text-white placeholder-gray-500"
             />
           </div>
 
           {/* Resume Upload */}
           <div className="space-y-2">
-            <label htmlFor="resume-upload" className="block text-sm font-medium">
+            <label htmlFor="resume-upload" className="block text-sm font-medium text-gray-300">
               Upload Resume (PDF) *
             </label>
             <input
@@ -272,11 +242,7 @@ const LandingPage = () => {
             />
             <label
               htmlFor="resume-upload"
-              className={`flex items-center justify-center w-full px-4 py-3 border-2 border-dashed rounded-md cursor-pointer transition-all duration-300 ${
-                theme === 'dark'
-                  ? 'border-gray-700 hover:border-blue-500 bg-gray-800'
-                  : 'border-gray-300 hover:border-blue-500 bg-gray-50'
-              }`}
+              className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-300 border-white/10 hover:border-blue-500/50 bg-white/5 hover:bg-white/10"
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -285,16 +251,11 @@ const LandingPage = () => {
                 {formData.resumeFile ? formData.resumeFile.name : 'No file selected (PDF only)'}
               </span>
             </label>
-            
             {formData.resumeFile && !parsedData && (
               <button
                 onClick={handleResumeUpload}
                 disabled={uploading}
-                className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl ${
-                  theme === 'dark'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white'
-                    : 'bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white'
-                }`}
+                className="w-full py-3.5 mt-2 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white"
               >
                 {uploading ? (
                   <span className="flex items-center justify-center">
@@ -318,22 +279,14 @@ const LandingPage = () => {
 
           {/* Error Display */}
           {error && (
-            <div className={`p-4 rounded-md border-l-4 transition-all duration-300 ${
-              theme === 'dark'
-                ? 'bg-red-900/20 border-red-500 text-red-300'
-                : 'bg-red-100 border-red-500 text-red-700'
-            }`}>
+            <div className="p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-400">
               <p className="text-sm font-medium">{error}</p>
             </div>
           )}
 
           {/* Parsed Info Display */}
           {parsedData && (
-            <div className={`p-4 rounded-md border-l-4 transition-all duration-300 ${
-              theme === 'dark'
-                ? 'bg-green-900/20 border-green-500 text-green-300'
-                : 'bg-green-100 border-green-500 text-green-700'
-            }`}>
+            <div className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 backdrop-blur-sm">
               <h3 className="text-sm font-semibold mb-2">✓ Resume Scanned</h3>
               <div className="text-sm space-y-1">
                 {parsedData.email && (
@@ -350,11 +303,7 @@ const LandingPage = () => {
           <button
             onClick={handleStartInterview}
             disabled={!formData.name || !parsedData || uploading}
-            className={`w-full py-4 rounded-lg font-bold text-lg transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-xl hover:shadow-2xl relative overflow-hidden group ${
-              theme === 'dark'
-                ? 'bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 hover:from-emerald-700 hover:via-green-700 hover:to-teal-700 text-white'
-                : 'bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 hover:from-emerald-600 hover:via-green-600 hover:to-teal-600 text-white'
-            }`}
+            className="w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.3)] relative overflow-hidden group bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-500 hover:via-emerald-400 hover:to-teal-400 text-white"
           >
             <span className="relative z-10 flex items-center justify-center">
               <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -366,13 +315,11 @@ const LandingPage = () => {
           </button>
           
           {/* Info Badge */}
-          <div className={`text-center py-3 px-4 rounded-lg transition-all duration-300 ${
-            theme === 'dark' ? 'bg-blue-900/30 border border-blue-800/50' : 'bg-blue-50 border border-blue-200'
-          }`}>
-            <p className={`text-xs font-medium transition-all duration-300 ${theme === 'dark' ? 'text-blue-300' : 'text-blue-700'}`}>
+          <div className="text-center py-3 px-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+            <p className="text-xs font-medium text-blue-400 uppercase tracking-widest">
               DSA → Conceptual → Project
             </p>
-            <p className={`text-xs mt-1 transition-all duration-300 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className="text-xs mt-1 text-gray-400 font-medium">
               Complete all 3 rounds for comprehensive feedback
             </p>
           </div>
@@ -380,12 +327,12 @@ const LandingPage = () => {
 
         {/* Past Interview History Panel */}
         {user && (
-          <div className="w-full max-w-4xl space-y-6">
-            <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'}`}>Past Interview Reports</h3>
+          <div className="w-full max-w-4xl space-y-6 mt-12">
+            <h3 className="text-2xl font-bold text-white tracking-tight">Past Interview Reports</h3>
             {loadingHistory ? (
-              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}>Loading history...</p>
+              <p className="text-gray-400 font-medium">Loading history...</p>
             ) : pastSessions.length === 0 ? (
-              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}>No completed interviews found. Start your journey above!</p>
+              <p className="text-gray-400 font-medium">No completed interviews found. Start your journey above!</p>
             ) : (
               <div className="grid gap-6 md:grid-cols-2">
                 {pastSessions.map(session => {
@@ -393,25 +340,21 @@ const LandingPage = () => {
                   const sendingState = emailSendingMap[session._id];
                   
                   return (
-                    <div key={session._id} className={`p-6 rounded-xl border transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 ${
-                      theme === 'dark' ? 'bg-gray-900/40 border-gray-800 hover:border-indigo-500/50 backdrop-blur-md' : 'bg-white border-gray-200 hover:border-indigo-300'
-                    }`}>
+                    <div key={session._id} className="p-6 rounded-2xl border transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 bg-[#111111]/80 border-white/5 hover:border-white/10 backdrop-blur-xl">
                       <div className="flex justify-between items-start mb-4">
                         <div>
-                          <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                            theme === 'dark' ? 'bg-indigo-900/50 text-indigo-300 border border-indigo-800/50' : 'bg-indigo-100 text-indigo-700'
-                          }`}>
+                          <span className="px-3 py-1 text-[10px] font-bold tracking-widest uppercase rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                             {session.sessionType.toUpperCase()}
                           </span>
-                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                          <p className="mt-3 text-sm text-gray-400 font-medium">
                             {new Date(session.completedAt || session.startedAt).toLocaleDateString()}
                           </p>
                         </div>
                         <div className="text-right">
                           <div className={`text-2xl font-bold ${
-                            percentage >= 80 ? 'text-emerald-500' : percentage >= 60 ? 'text-yellow-500' : 'text-orange-500'
+                            percentage >= 80 ? 'text-emerald-400' : percentage >= 60 ? 'text-yellow-400' : 'text-orange-400'
                           }`}>{percentage}%</div>
-                          <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+                          <div className="text-xs text-gray-500 font-medium uppercase tracking-wider mt-1">
                             {session.finalScore || 0} / {session.finalMaxScore || 0} pts
                           </div>
                         </div>
@@ -420,13 +363,13 @@ const LandingPage = () => {
                       <button
                         onClick={() => handleResendReport(session._id)}
                         disabled={sendingState === 'sending' || sendingState === 'sent'}
-                        className={`w-full py-2.5 rounded-lg text-sm font-semibold transition-all flex justify-center items-center ${
-                          sendingState === 'sent' ? 'bg-emerald-600/20 text-emerald-500 border border-emerald-500/30 cursor-not-allowed' :
-                          sendingState === 'sending' ? 'bg-gray-600 text-gray-300 cursor-not-allowed' :
-                          theme === 'dark' ? 'bg-gray-800 hover:bg-gray-700 text-white border border-gray-700' : 'bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-300'
+                        className={`w-full py-3 rounded-xl text-sm font-semibold transition-all duration-200 flex justify-center items-center mt-2 ${
+                          sendingState === 'sent' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 cursor-not-allowed' :
+                          sendingState === 'sending' ? 'bg-white/5 text-gray-500 cursor-not-allowed border border-white/5' :
+                          'bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 hover:border-white/20'
                         }`}
                       >
-                        {sendingState === 'sent' ? '✅ Email Sent' :
+                        {sendingState === 'sent' ? 'Report Sent' :
                          sendingState === 'sending' ? 'Sending...' : 'Email Me Report'}
                       </button>
                     </div>
@@ -439,10 +382,10 @@ const LandingPage = () => {
       </main>
 
       {/* Footer */}
-      <footer className={`text-center py-8 transition-all duration-300 backdrop-blur-sm ${theme === 'dark' ? 'text-gray-400 bg-gray-900/30' : 'text-gray-500 bg-white/30'}`}>
-        <p className="text-sm font-medium">Powered by AI • Real-time Evaluation • Comprehensive Feedback</p>
-        <p className={`text-xs mt-2 transition-all duration-300 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
-          © 2025 Sarthi Interview Platform. All rights reserved.
+      <footer className="text-center py-8 backdrop-blur-xl bg-[#0a0a0a]/80 border-t border-white/5 mt-auto">
+        <p className="text-sm font-medium text-gray-400 tracking-wide">Powered by AI • Real-time Evaluation • Comprehensive Feedback</p>
+        <p className="text-xs mt-2 text-gray-500 uppercase tracking-widest font-semibold">
+          © {new Date().getFullYear()} Sarthi Interview Platform. All rights reserved.
         </p>
       </footer>
     </div>

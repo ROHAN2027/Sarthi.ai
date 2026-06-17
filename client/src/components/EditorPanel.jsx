@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Editor from '@monaco-editor/react';
+import { API_BASE_URL } from '../config';
 
 const EditorPanel = ({ problem, onSkip, onSubmit, timeRemaining }) => {
   const [language, setLanguage] = useState('python');
@@ -96,7 +97,7 @@ const EditorPanel = ({ problem, onSkip, onSubmit, timeRemaining }) => {
     setOutput(null);
 
     try {
-      const response = await fetch(`http://localhost:5000/api/problems/run/${encodeURIComponent(problem.title)}`, {
+      const response = await fetch(`${API_BASE_URL}/api/problems/run/${encodeURIComponent(problem.title)}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -139,7 +140,7 @@ const EditorPanel = ({ problem, onSkip, onSubmit, timeRemaining }) => {
     setOutput(null);
 
     try {
-      const response = await fetch(`http://localhost:5000/api/problems/submit/${encodeURIComponent(problem.title)}`, {
+      const response = await fetch(`${API_BASE_URL}/api/problems/submit/${encodeURIComponent(problem.title)}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

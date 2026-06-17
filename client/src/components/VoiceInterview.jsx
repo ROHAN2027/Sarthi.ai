@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { WS_BASE_URL } from '../config';
 
 const VoiceInterview = ({ 
   interviewType = 'conceptual', 
@@ -94,11 +95,11 @@ const VoiceInterview = ({
    */
   const connectWebSocket = () => {
     try {
-      console.log('[WebSocket] Attempting connection to ws://localhost:5000/ws/voice');
-      const ws = new WebSocket('ws://localhost:5000/ws/voice');
+      // Debug log removed
+      const ws = new WebSocket(`${WS_BASE_URL}/ws/voice`);
       
       ws.onopen = () => {
-        console.log('[WebSocket] Connected successfully');
+        // Debug log removed
         setIsConnected(true);
         setError(null);
       };
@@ -106,7 +107,7 @@ const VoiceInterview = ({
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          console.log('[WebSocket] Received:', data.type);
+          // Debug log removed
           handleWebSocketMessage(data);
         } catch (err) {
           console.error('[WebSocket] Error parsing message:', err);
@@ -120,7 +121,7 @@ const VoiceInterview = ({
       };
 
       ws.onclose = (event) => {
-        console.log('[WebSocket] Disconnected. Code:', event.code, 'Reason:', event.reason);
+        // Debug log removed
         setIsConnected(false);
         
         // Only auto-reconnect if:
@@ -128,11 +129,11 @@ const VoiceInterview = ({
         // 2. Connection was not closed intentionally (code 1000 = normal closure)
         // 3. Not already attempting to reconnect
         if (!interviewStarted && event.code !== 1000 && (!wsRef.current || wsRef.current.readyState === WebSocket.CLOSED)) {
-          console.log('[WebSocket] Will attempt reconnect in 3 seconds...');
+          // Debug log removed
           setTimeout(() => {
             // Double-check we're still not connected before reconnecting
             if (!wsRef.current || wsRef.current.readyState === WebSocket.CLOSED) {
-              console.log('[WebSocket] Reconnecting...');
+              // Debug log removed
               connectWebSocket();
             }
           }, 3000);
@@ -151,7 +152,7 @@ const VoiceInterview = ({
    * Handle incoming WebSocket messages
    */
   const handleWebSocketMessage = (data) => {
-    console.log('Received:', data.type);
+    // Debug log removed
 
     switch (data.type) {
       case 'connected':
@@ -254,7 +255,7 @@ const VoiceInterview = ({
         break;
 
       case 'interview_complete':
-        console.log('[VoiceInterview] Interview complete, triggering onComplete callback');
+        // Debug log removed
         handleInterviewComplete(data);
         break;
 
@@ -452,7 +453,7 @@ const VoiceInterview = ({
    * Handle interview completion - FIX: Ensure onComplete is called
    */
   const handleInterviewComplete = (data) => {
-    console.log('[VoiceInterview] Interview complete with data:', data);
+    // Debug log removed
     
     // Add completion message to chat
     const completionMessage = {
@@ -470,7 +471,7 @@ const VoiceInterview = ({
     
     // CRITICAL FIX: Ensure onComplete callback is called
     if (onComplete && typeof onComplete === 'function') {
-      console.log('[VoiceInterview] Calling onComplete callback');
+      // Debug log removed
       onComplete(data);
     } else {
       console.error('[VoiceInterview] onComplete callback not provided or not a function!');

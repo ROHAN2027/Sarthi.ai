@@ -47,6 +47,7 @@ body {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -61,38 +62,61 @@ body {
  * Auth Page — Animated gradient background
  * ───────────────────────────────────────────────────────────── */
 .auth-gradient-bg {
-  background: linear-gradient(
-    -45deg,
-    #FFE4E8,   /* pastel pink */
-    #E8E0FF,   /* pastel lavender */
-    #DBEAFE,   /* pastel sky */
-    #D1FAE5,   /* pastel mint */
-    #FEF3C7,   /* pastel peach */
-    #E8E0FF    /* back to lavender */
-  );
+  background: linear-gradient(-45deg,
+      #FFE4E8,
+      /* pastel pink */
+      #E8E0FF,
+      /* pastel lavender */
+      #DBEAFE,
+      /* pastel sky */
+      #D1FAE5,
+      /* pastel mint */
+      #FEF3C7,
+      /* pastel peach */
+      #E8E0FF
+      /* back to lavender */
+    );
   background-size: 400% 400%;
   animation: authGradientShift 12s ease infinite;
 }
 
 .auth-gradient-bg-dark {
-  background: linear-gradient(
-    -45deg,
-    #1a0a1e,   /* deep purple-black */
-    #0f172a,   /* deep navy */
-    #1e1b4b,   /* deep indigo */
-    #0c1a25,   /* deep teal-black */
-    #1a0a1e    /* back to purple-black */
-  );
+  background: linear-gradient(-45deg,
+      #1a0a1e,
+      /* deep purple-black */
+      #0f172a,
+      /* deep navy */
+      #1e1b4b,
+      /* deep indigo */
+      #0c1a25,
+      /* deep teal-black */
+      #1a0a1e
+      /* back to purple-black */
+    );
   background-size: 400% 400%;
   animation: authGradientShift 12s ease infinite;
 }
 
 @keyframes authGradientShift {
-  0% { background-position: 0% 50%; }
-  25% { background-position: 50% 100%; }
-  50% { background-position: 100% 50%; }
-  75% { background-position: 50% 0%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  25% {
+    background-position: 50% 100%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  75% {
+    background-position: 50% 0%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -158,9 +182,19 @@ body {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33% { transform: translateY(-15px) rotate(1deg); }
-  66% { transform: translateY(10px) rotate(-1deg); }
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  33% {
+    transform: translateY(-15px) rotate(1deg);
+  }
+
+  66% {
+    transform: translateY(10px) rotate(-1deg);
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -197,12 +231,10 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent);
   transition: left 0.6s ease;
 }
 
@@ -219,9 +251,20 @@ body {
   transition: all 0.4s ease;
 }
 
-.strength-weak { width: 33%; background: linear-gradient(90deg, #ef4444, #f87171); }
-.strength-medium { width: 66%; background: linear-gradient(90deg, #f59e0b, #fbbf24); }
-.strength-strong { width: 100%; background: linear-gradient(90deg, #10b981, #34d399); }
+.strength-weak {
+  width: 33%;
+  background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.strength-medium {
+  width: 66%;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.strength-strong {
+  width: 100%;
+  background: linear-gradient(90deg, #10b981, #34d399);
+}
 
 /* ─────────────────────────────────────────────────────────────
  * Custom Scrollbar (for auth pages)
@@ -229,13 +272,16 @@ body {
 .auth-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
+
 .auth-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .auth-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(139, 92, 246, 0.3);
   border-radius: 3px;
 }
+
 .auth-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(139, 92, 246, 0.5);
 }

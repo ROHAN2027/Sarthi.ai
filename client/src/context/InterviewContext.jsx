@@ -17,7 +17,7 @@ export const InterviewProvider = ({ children }) => {
       const stored = localStorage.getItem('interviewData');
       if (stored) {
         const parsed = JSON.parse(stored);
-        console.log('[InterviewContext] Loaded from localStorage:', parsed);
+        // Debug log removed
         return parsed;
       }
     } catch (error) {
@@ -50,11 +50,7 @@ export const InterviewProvider = ({ children }) => {
   useEffect(() => {
     try {
       localStorage.setItem('interviewData', JSON.stringify(interviewData));
-      console.log('[InterviewContext] Saved to localStorage:', {
-        name: interviewData.name,
-        githubLink: interviewData.githubLink,
-        currentStage: interviewData.currentStage
-      });
+      // Debug logs removed
     } catch (error) {
       console.error('[InterviewContext] Error saving to localStorage:', error);
     }
@@ -71,7 +67,7 @@ export const InterviewProvider = ({ children }) => {
   }, [interviewData.sessionId]);
 
   const setUserInfo = useCallback((name, email, githubLinks) => {
-    console.log('[InterviewContext] setUserInfo called with:', { name, email, githubLinks });
+    // Debug log removed
     
     // Handle both array and single link
     let selectedGithubLink = null;
@@ -83,7 +79,7 @@ export const InterviewProvider = ({ children }) => {
       }
     }
 
-    console.log('[InterviewContext] Selected GitHub link:', selectedGithubLink);
+    // Debug log removed
 
     setInterviewData(prev => ({
       ...prev,
@@ -95,14 +91,11 @@ export const InterviewProvider = ({ children }) => {
 
     // Force immediate localStorage save
     setTimeout(() => {
-      console.log('[InterviewContext] Verifying localStorage after setUserInfo');
+      // Debug log removed
       const stored = localStorage.getItem('interviewData');
       if (stored) {
         const parsed = JSON.parse(stored);
-        console.log('[InterviewContext] localStorage verified:', {
-          name: parsed.name,
-          githubLink: parsed.githubLink
-        });
+        // Debug logs removed
       }
     }, 100);
   }, []);
@@ -125,7 +118,7 @@ export const InterviewProvider = ({ children }) => {
     // NOTE: This function is intentionally a no-op
     // GitHub questions are now fetched by WebSocket handler on backend
     // to avoid duplicate API calls and ensure structured format
-    console.log('[InterviewContext] preloadGithubQuestions called - delegating to WebSocket handler');
+    // Debug log removed
   }, []);
 
   const resetInterview = useCallback(() => {
@@ -144,7 +137,7 @@ export const InterviewProvider = ({ children }) => {
     setInterviewData(resetData);
     // Clear localStorage
     localStorage.removeItem('interviewData');
-    console.log('[InterviewContext] Interview reset, localStorage cleared');
+    // Debug log removed
   }, []);
 
   const value = {

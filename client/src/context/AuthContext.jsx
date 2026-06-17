@@ -136,7 +136,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     localStorage.removeItem(TOKEN_KEY);
-    console.log('[AuthContext] User logged out');
+    // Debug log removed
   }, []);
 
   const value = {
