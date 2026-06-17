@@ -1,4 +1,4 @@
-# Sarthi.ai 🚀
+# Sarthi.ai 
 
 Sarthi.ai is an intelligent, AI-driven technical interview platform designed to conduct highly realistic Data Structures & Algorithms (DSA), Conceptual, and Project-based interviews. By evaluating a candidate's resume and utilizing a generative AI backend, Sarthi.ai provides tailored interview questions, an integrated code editor for live coding, and a real-time conversational AI voice agent.
 
