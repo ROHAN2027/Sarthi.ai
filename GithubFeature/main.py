@@ -38,6 +38,15 @@ app.add_middleware(
 # Include voice service routes
 app.include_router(voice_router)
 
+# Root path endpoint
+@app.get("/")
+def read_root():
+    return {
+        "message": "Sarthi AI Services API is running.",
+        "docs": "/docs",
+        "health": "/health"
+    }
+
 # Health check endpoint
 @app.get("/health")
 def health_check():
