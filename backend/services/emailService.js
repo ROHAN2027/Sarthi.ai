@@ -3,8 +3,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const sendReportEmail = async (userEmail, pdfBuffer, session) => {
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.warn('[emailService] SMTP credentials not found. Mocking email delivery.');
+  if (!process.env.SMTP_USER || !process.env.OAUTH_CLIENT_ID || !process.env.OAUTH_REFRESH_TOKEN) {
+    console.warn('[emailService] Email credentials missing. Mocking email delivery.');
     console.log(`[emailService] Would send PDF to ${userEmail} for session ${session._id}`);
     return { success: true, mocked: true };
   }

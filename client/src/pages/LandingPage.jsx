@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useInterview } from '../context/InterviewContext';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL, PYTHON_API_URL } from '../config';
-import sarthiLogo from '../data/WhatsApp Image 2025-11-07 at 17.43.30_7cdd5e13.jpg';
+import sarthiLogo from '../data/logo.jpg';
 
 const LandingPage = () => {
   const navigate = useNavigate();

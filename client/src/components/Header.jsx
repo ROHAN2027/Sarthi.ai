@@ -1,5 +1,6 @@
 import React from 'react';
 import { formatTime, getTimerColor, getProgressStatus } from '../controllers/utilsController';
+import sarthiLogo from '../data/logo.jpg';
 
 /**
  * Header Component with Timer and Progress
@@ -14,6 +15,13 @@ const Header = ({
   return (
     <header className="bg-gray-900 text-white px-6 py-3 flex items-center justify-between">
       <div className="flex items-center space-x-4">
+        <div className="w-8 h-8 rounded-lg overflow-hidden border border-white/10">
+          <img 
+            src={sarthiLogo} 
+            alt="Sarthi Logo" 
+            className="w-full h-full object-cover"
+          />
+        </div>
         <h1 className="text-xl font-bold">Sarthi.ai</h1>
         <span className="text-gray-400">|</span>
         <span className="text-gray-300">AI Interview Platform</span>
