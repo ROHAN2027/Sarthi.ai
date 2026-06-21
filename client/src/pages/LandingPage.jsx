@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useInterview } from '../context/InterviewContext';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL, PYTHON_API_URL } from '../config';
+import sarthiLogo from '../data/WhatsApp Image 2025-11-07 at 17.43.30_7cdd5e13.jpg';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -178,7 +179,7 @@ const LandingPage = () => {
           {/* Logo */}
           <div className="w-10 h-10 rounded-lg overflow-hidden shadow-md border border-white/10">
             <img 
-              src="/src/data/WhatsApp Image 2025-11-07 at 17.43.30_7cdd5e13.jpg" 
+              src={sarthiLogo} 
               alt="Sarthi Logo" 
               className="w-full h-full object-cover"
             />
