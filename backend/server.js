@@ -30,7 +30,7 @@ app.use('/api/auth', authRoutes);
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'An internal server error occurred.',
     message: err.message,
     stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
